@@ -2,9 +2,14 @@ package com.abc.usermgt.controller;
 
 import com.abc.usermgt.dao.UserMgtDAO;
 import com.abc.usermgt.domain.User;
+import com.abc.usermgt.jwt.JWTRequest;
+import com.abc.usermgt.jwt.JWTResponse;
+import com.abc.usermgt.jwt.JWTTokenUtil;
+import com.abc.usermgt.jwt.JWTUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -16,6 +21,9 @@ public class UserMgtService {
 
     @Autowired
     public UserMgtDAO userDAO;
+    
+    @Autowired
+    private JWTTokenUtil jwtTokenUtil;
 
     @PostMapping("/")
     public ResponseEntity<URI> addUser(@RequestBody User user) {
@@ -34,7 +42,22 @@ public class UserMgtService {
         }
     }
 
-    @PutMapping("/")
+    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JWTRequest authenticationRequest) throws Exception {
+
+        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+
+        UserDetails details = new JWTUserDetails("dimuthu", "lee");
+        final String token = jwtTokenUtil.generateToken(details);
+        return ResponseEntity.ok(new JWTResponse(token));
+    }
+
+
+    private boolean authenticate(String username, String password) throws Exception {
+        return true;
+    }
+
+        @PutMapping("/")
     public ResponseEntity udpateUser() {
         return null;
     }

@@ -1,4 +1,4 @@
-package com.abc.usermgt.dao;
+package com.abc.usermgt.jwt;
 
 import java.io.Serializable;
 import java.util.Date;
