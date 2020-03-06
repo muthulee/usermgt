@@ -3,6 +3,7 @@ package com.abc.usermgt.controller;
 import com.abc.usermgt.dao.UserMgtDAO;
 import com.abc.usermgt.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,16 +15,23 @@ import java.net.URI;
 public class UserMgtService {
 
     @Autowired
-    private UserMgtDAO userDAO;
+    public UserMgtDAO userDAO;
 
     @PostMapping("/")
     public ResponseEntity<URI> addUser(@RequestBody User user) {
-       return null;
+        User savedUser = userDAO.addUser(user);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/id/{id}")
-    public ResponseEntity<User> getUser(){
-        return null;
+    @GetMapping("/username/{username}")
+    public ResponseEntity<User> getUser(@PathVariable(value="username") String username){
+        User savedUser = userDAO.getUser(username);
+        if (savedUser != null ) {
+            return ResponseEntity.ok(savedUser);
+        } else {
+            return new ResponseEntity("Invalid Name", HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/")
